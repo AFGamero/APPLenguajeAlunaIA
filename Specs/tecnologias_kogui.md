@@ -17,34 +17,34 @@
 
 ---
 
-## 🖥️ Backend
+## 🖥️ Backend (FastAPI / Serverless)
 
-- **Spring Boot 3.x:** API REST principal.
-- **Spring Security + JWT:** Autenticación y autorización.
-- **Spring Data JPA (Hibernate):** Persistencia de datos.
-- **Flyway:** Migraciones de base de datos.
-- **Spring Batch:** Procesos de sincronización.
-- **WebSocket (STOMP):** Sincronización en tiempo real (versión futura).
+- **FastAPI:** API REST principal (Rápida, tipado estático, ideal para Vercel Serverless Functions).
+- **Pydantic:** Validación de datos y esquemas.
+- **SQLAlchemy / SQLModel:** ORM para persistencia de datos.
+- **Alembic:** Migraciones de base de datos.
+- **PyJWT & Passlib:** Autenticación y encriptación de contraseñas.
+- **Background Tasks:** Tareas en segundo plano ligeras provistas por FastAPI.
 
 ---
 
-## 🗄️ Base de datos e infraestructura
+## 🗄️ Base de datos e infraestructura (Capa Gratuita / Prototipo)
 
-- **PostgreSQL 16:** Base de datos relacional principal.
-- **Redis 7:** Caché y gestión de sesiones.
-- **AWS S3 / Cloud Storage:** Almacenamiento de audios e imágenes.
-- **Docker + Docker Compose:** Contenedores para desarrollo y despliegue.
-- **Railway / Render:** Hosting rápido para prototipos.
+- **Neon o Supabase Database:** PostgreSQL Serverless con capa gratuita ideal para prototipos.
+- **Upstash Redis:** Caché y gestión de sesiones Serverless (capa gratuita en Vercel).
+- **Vercel Blob o Supabase Storage:** Almacenamiento gratuito de audios e imágenes sin costo inicial.
+- **Vercel Hosting:** Despliegue de funciones serverless (Python) a coste cero.
 - **Firebase Cloud Messaging:** Notificaciones push.
 
 ---
 
-## 🤖 Inteligencia Artificial y NLP
+## 🤖 Inteligencia Artificial y NLP (Integrada)
 
-- **Python + FastAPI:** Microservicio independiente de IA.
+*Al ser un backend en Python, la IA se integra directamente en la misma API sin requerir microservicios adicionales, reduciendo complejidad para el prototipo.*
+- **Integración Directa:** Lógica de IA y NLP convive con el backend en FastAPI.
 - **Algoritmo SM-2:** Repetición espaciada para aprendizaje.
 - **scikit-learn:** Modelos ligeros de recomendación.
-- **TensorFlow Lite:** Inferencia local en el dispositivo.
+- **TensorFlow Lite:** Inferencia local en el dispositivo (móvil).
 - **Whisper (local):** Reconocimiento de voz para ejercicios de pronunciación (versión futura).
 
 ---
@@ -52,6 +52,16 @@
 # ⚠️ Riesgos y Desafíos del Proyecto
 
 ## 🔴 Riesgos altos
+
+### Limitaciones de Serverless en Vercel (Prototipo)
+Las funciones gratuitas tienen un límite de tiempo de ejecución (10s) y un límite de tamaño de empaquetado (250MB), lo cual puede ser restrictivo si se usan bibliotecas de IA muy pesadas.
+
+**Mitigación:**
+- Usar versiones ligeras de librerías.
+- Pre-calcular modelos o realizar inferencia del lado del cliente (TensorFlow Lite).
+- Optimizar consultas pesadas.
+
+---
 
 ### Acceso a la comunidad kogui
 La comunidad puede no permitir el acceso o retirar su colaboración.
