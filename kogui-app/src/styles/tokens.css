@@ -1,0 +1,194 @@
+/* ============================================================
+   Nebbi App — Design Tokens
+   Verde dominante inspirado en la Sierra Nevada de Santa Marta
+   ============================================================ */
+
+:root {
+  /* ── Verde (color DOMINANTE) ────────────────────────────── */
+  --color-primary-50:  hsl(145, 70%, 95%);
+  --color-primary-100: hsl(145, 65%, 87%);
+  --color-primary-200: hsl(145, 60%, 74%);
+  --color-primary-300: hsl(145, 55%, 58%);
+  --color-primary-400: hsl(145, 52%, 44%);
+  --color-primary-500: hsl(145, 58%, 34%);   /* Base — Verde selva */
+  --color-primary-600: hsl(145, 60%, 26%);
+  --color-primary-700: hsl(145, 62%, 19%);
+  --color-primary-800: hsl(145, 65%, 13%);
+  --color-primary-900: hsl(145, 68%, 8%);
+
+  /* ── Verde claro (acento secundario) ────────────────────── */
+  --color-secondary-50:  hsl(158, 75%, 94%);
+  --color-secondary-100: hsl(158, 68%, 84%);
+  --color-secondary-200: hsl(158, 62%, 70%);
+  --color-secondary-300: hsl(158, 56%, 54%);
+  --color-secondary-400: hsl(158, 52%, 42%);
+  --color-secondary-500: hsl(158, 55%, 34%);  /* Verde esmeralda */
+  --color-secondary-600: hsl(158, 58%, 26%);
+  --color-secondary-700: hsl(158, 62%, 18%);
+  --color-secondary-800: hsl(158, 65%, 12%);
+  --color-secondary-900: hsl(158, 68%, 7%);
+
+  /* ── Amarillo-lima (acento energético) ──────────────────── */
+  --color-accent-50:  hsl(82, 90%, 95%);
+  --color-accent-100: hsl(82, 80%, 87%);
+  --color-accent-200: hsl(82, 72%, 74%);
+  --color-accent-300: hsl(82, 65%, 58%);
+  --color-accent-400: hsl(82, 60%, 46%);
+  --color-accent-500: hsl(82, 62%, 38%);      /* Lima vibrante */
+  --color-accent-600: hsl(82, 64%, 30%);
+
+  /* ── Neutros cálidos ────────────────────────────────────── */
+  --color-neutral-0:   hsl(0, 0%, 100%);
+  --color-neutral-50:  hsl(145, 18%, 97%);   /* Blanco con tinte verde */
+  --color-neutral-100: hsl(145, 14%, 93%);
+  --color-neutral-200: hsl(145, 10%, 85%);
+  --color-neutral-300: hsl(145, 7%, 72%);
+  --color-neutral-400: hsl(145, 5%, 55%);
+  --color-neutral-500: hsl(145, 4%, 42%);
+  --color-neutral-600: hsl(145, 5%, 30%);
+  --color-neutral-700: hsl(145, 6%, 20%);
+  --color-neutral-800: hsl(145, 7%, 13%);
+  --color-neutral-900: hsl(145, 10%, 8%);
+
+  /* ── Colores semánticos ─────────────────────────────────── */
+  --color-success-light: hsl(145, 65%, 90%);
+  --color-success:       hsl(145, 60%, 38%);
+  --color-success-dark:  hsl(145, 62%, 28%);
+
+  --color-error-light: hsl(4, 90%, 93%);
+  --color-error:       hsl(4, 72%, 52%);
+  --color-error-dark:  hsl(4, 68%, 40%);
+
+  --color-warning-light: hsl(46, 100%, 92%);
+  --color-warning:       hsl(46, 90%, 50%);
+  --color-warning-dark:  hsl(46, 82%, 38%);
+
+  /* ── Tipografía ─────────────────────────────────────────── */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+  /* Escala tipográfica (modular scale 1.25) */
+  --font-size-xs:   0.64rem;
+  --font-size-sm:   0.8rem;
+  --font-size-base: 1rem;
+  --font-size-md:   1.25rem;
+  --font-size-lg:   1.563rem;
+  --font-size-xl:   1.953rem;
+  --font-size-2xl:  2.441rem;
+  --font-size-3xl:  3.052rem;
+
+  --font-weight-light:     300;
+  --font-weight-regular:   400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+  --font-weight-extrabold: 800;
+
+  --line-height-tight:   1.25;
+  --line-height-snug:    1.375;
+  --line-height-normal:  1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose:   2;
+
+  /* ── Espaciado (escala 4px) ─────────────────────────────── */
+  --space-0:   0;
+  --space-px:  1px;
+  --space-0-5: 0.125rem;
+  --space-1:   0.25rem;
+  --space-2:   0.5rem;
+  --space-3:   0.75rem;
+  --space-4:   1rem;
+  --space-5:   1.25rem;
+  --space-6:   1.5rem;
+  --space-8:   2rem;
+  --space-10:  2.5rem;
+  --space-12:  3rem;
+  --space-16:  4rem;
+  --space-20:  5rem;
+  --space-24:  6rem;
+  --space-32:  8rem;
+
+  /* ── Bordes y radios ────────────────────────────────────── */
+  --radius-sm:   0.25rem;
+  --radius-base: 0.5rem;
+  --radius-md:   0.75rem;
+  --radius-lg:   1rem;
+  --radius-xl:   1.5rem;
+  --radius-2xl:  2rem;
+  --radius-full: 9999px;
+
+  /* ── Sombras ────────────────────────────────────────────── */
+  --shadow-sm:   0 1px 2px hsla(145, 40%, 10%, 0.06), 0 1px 3px hsla(145, 40%, 10%, 0.1);
+  --shadow-base: 0 2px 4px hsla(145, 40%, 10%, 0.06), 0 4px 6px hsla(145, 40%, 10%, 0.1);
+  --shadow-md:   0 4px 8px hsla(145, 40%, 10%, 0.08), 0 6px 12px hsla(145, 40%, 10%, 0.12);
+  --shadow-lg:   0 8px 16px hsla(145, 40%, 10%, 0.08), 0 16px 24px hsla(145, 40%, 10%, 0.1);
+  --shadow-xl:   0 16px 32px hsla(145, 40%, 10%, 0.10), 0 24px 48px hsla(145, 40%, 10%, 0.12);
+  --shadow-glow-primary:   0 0 28px hsla(145, 58%, 34%, 0.40);
+  --shadow-glow-secondary: 0 0 24px hsla(158, 55%, 34%, 0.35);
+  --shadow-glow-accent:    0 0 20px hsla(82, 62%, 38%, 0.30);
+
+  /* ── Transiciones ───────────────────────────────────────── */
+  --transition-fast:   150ms ease;
+  --transition-base:   250ms ease;
+  --transition-slow:   400ms ease;
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Z-index ────────────────────────────────────────────── */
+  --z-base:    0;
+  --z-above:   10;
+  --z-sticky:  100;
+  --z-overlay: 200;
+  --z-modal:   300;
+  --z-toast:   400;
+  --z-tooltip: 500;
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  --max-width-sm:   480px;
+  --max-width-base: 720px;
+  --max-width-lg:   1024px;
+  --max-width-xl:   1280px;
+  --navbar-height:  64px;
+
+  /* ── Gradientes verdes reutilizables ────────────────────── */
+  --gradient-primary:      linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+  --gradient-hero:         linear-gradient(140deg, var(--color-primary-900) 0%, var(--color-primary-700) 45%, var(--color-secondary-700) 100%);
+  --gradient-card-green:   linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-secondary-50) 100%);
+  --gradient-btn-green:    linear-gradient(135deg, var(--color-primary-400), var(--color-primary-600));
+  --gradient-surface:      linear-gradient(160deg, var(--color-neutral-50) 0%, var(--color-primary-50) 100%);
+}
+
+/* ── Modo Oscuro ────────────────────────────────────────── */
+:root[data-theme='dark'] {
+  /* Neutros invertidos (Fondo oscuro, texto claro) */
+  --color-neutral-0:   hsl(145, 12%, 8%);
+  --color-neutral-50:  hsl(145, 10%, 12%);
+    --color-neutral-100: hsl(145, 8%, 18%);
+    --color-neutral-200: hsl(145, 7%, 26%);
+    --color-neutral-300: hsl(145, 6%, 35%);
+    --color-neutral-400: hsl(145, 5%, 45%);
+    --color-neutral-500: hsl(145, 5%, 60%);
+    --color-neutral-600: hsl(145, 8%, 75%);
+    --color-neutral-700: hsl(145, 12%, 88%);
+    --color-neutral-800: hsl(145, 15%, 95%);
+    --color-neutral-900: hsl(0, 0%, 100%);
+
+    /* Ajustar los primarios para que no brillen tanto sobre oscuro y sean legibles */
+    --color-primary-100: hsl(145, 50%, 25%);
+    --color-primary-200: hsl(145, 55%, 35%);
+    --color-primary-400: hsl(145, 60%, 55%);
+    --color-primary-500: hsl(145, 65%, 65%);
+    --color-primary-600: hsl(145, 70%, 75%);
+    --color-primary-700: hsl(145, 75%, 85%);
+
+    /* Ajuste de sombras para modo oscuro */
+    --shadow-sm:   0 1px 2px hsla(0, 0%, 0%, 0.4), 0 1px 3px hsla(0, 0%, 0%, 0.5);
+    --shadow-base: 0 2px 4px hsla(0, 0%, 0%, 0.4), 0 4px 6px hsla(0, 0%, 0%, 0.5);
+    --shadow-md:   0 4px 8px hsla(0, 0%, 0%, 0.5), 0 6px 12px hsla(0, 0%, 0%, 0.6);
+    --shadow-glow-primary:   0 0 24px hsla(145, 65%, 65%, 0.25);
+    
+    /* Ajuste de gradientes para modo oscuro */
+    --gradient-hero:         linear-gradient(140deg, var(--color-neutral-50) 0%, var(--color-primary-100) 45%, var(--color-neutral-0) 100%);
+    --gradient-card-green:   linear-gradient(135deg, var(--color-neutral-100) 0%, var(--color-primary-100) 100%);
+    --gradient-surface:      linear-gradient(160deg, var(--color-neutral-50) 0%, var(--color-neutral-100) 100%);
+}

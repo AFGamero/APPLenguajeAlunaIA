@@ -1,0 +1,32 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-12) var(--space-6);
+  background: var(--color-neutral-50);
+}
+
+.back {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-500);
+  margin-bottom: var(--space-8);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.back:hover {
+  color: var(--color-primary-700);
+  transform: translateX(-4px);
+}
+
+.placeholder {
+  text-align: center;
+  padding: var(--space-16);
+  background: var(--color-neutral-0);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-base);
+}
+
+.icon { font-size: 4rem; display: block; margin-bottom: var(--space-4); }
+.title { font-size: var(--font-size-xl); color: var(--color-neutral-800); margin-bottom: var(--space-2); }
+.id { font-size: var(--font-size-sm); color: var(--color-neutral-400); font-family: var(--font-family-mono); margin-bottom: var(--space-4); }
+.note { font-size: var(--font-size-sm); color: var(--color-secondary-500); font-weight: var(--font-weight-medium); }

@@ -1,173 +1,117 @@
-# Tecnologías y Riesgos — Prototipo IA Lengua Kogui
+# Tecnologías y Riesgos — Prototipo Web Lengua Kogui
 
 ---
 
-# 🧩 Stack Tecnológico
+# 🧩 Stack Tecnológico (Prototipo Web)
 
-## 📱 Frontend móvil
-
-- **Flutter 3.x:** Desarrollo multiplataforma para Android e iOS.
-- **Riverpod 2.x:** Gestión de estado reactiva.
-- **GoRouter:** Navegación declarativa.
-- **Drift (SQLite):** Base de datos local para modo offline.
-- **Just Audio:** Reproducción de audio nativo.
-- **Connectivity Plus:** Detección de conectividad en tiempo real.
-- **flutter_secure_storage:** Almacenamiento seguro de tokens (JWT).
-- **Lottie:** Animaciones para gamificación.
+Basado en la planificación del prototipo (`plan/kogui_prototipo_planificacion_v1.md`). El stack completo del sistema final (Flutter + FastAPI + microservicios) se define en la fase posterior.
 
 ---
 
-## 🖥️ Backend (FastAPI / Serverless)
+## 🖥️ Frontend Web
 
-- **FastAPI:** API REST principal (Rápida, tipado estático, ideal para Vercel Serverless Functions).
-- **Pydantic:** Validación de datos y esquemas.
-- **SQLAlchemy / SQLModel:** ORM para persistencia de datos.
-- **Alembic:** Migraciones de base de datos.
-- **PyJWT & Passlib:** Autenticación y encriptación de contraseñas.
-- **Background Tasks:** Tareas en segundo plano ligeras provistas por FastAPI.
-
----
-
-## 🗄️ Base de datos e infraestructura (Capa Gratuita / Prototipo)
-
-- **Neon o Supabase Database:** PostgreSQL Serverless con capa gratuita ideal para prototipos.
-- **Upstash Redis:** Caché y gestión de sesiones Serverless (capa gratuita en Vercel).
-- **Vercel Blob o Supabase Storage:** Almacenamiento gratuito de audios e imágenes sin costo inicial.
-- **Vercel Hosting:** Despliegue de funciones serverless (Python) a coste cero.
-- **Firebase Cloud Messaging:** Notificaciones push.
+- **React 18 + Vite:** Framework frontend con build rápido, desplegado en Vercel sin costo.
+- **TypeScript:** Tipado estático para mayor robustez y mantenibilidad.
+- **React Router v6:** Navegación SPA con rutas protegidas.
+- **supabase-js:** Cliente oficial de Supabase para autenticación y consultas en tiempo real.
+- **CSS Variables / Módulos CSS:** Sistema de diseño propio con tokens de colores, tipografía y espaciado.
+- **Web Speech API:** Síntesis de voz como fallback cuando no hay audio nativo disponible en Storage.
 
 ---
 
-## 🤖 Inteligencia Artificial y NLP (Integrada)
+## 🗄️ Backend y Base de Datos (Supabase)
 
-*Al ser un backend en Python, la IA se integra directamente en la misma API sin requerir microservicios adicionales, reduciendo complejidad para el prototipo.*
-- **Integración Directa:** Lógica de IA y NLP convive con el backend en FastAPI.
-- **Algoritmo SM-2:** Repetición espaciada para aprendizaje.
-- **scikit-learn:** Modelos ligeros de recomendación.
-- **TensorFlow Lite:** Inferencia local en el dispositivo (móvil).
-- **Whisper (local):** Reconocimiento de voz para ejercicios de pronunciación (versión futura).
+*Sin servidor propio. Supabase cubre backend, base de datos, autenticación y almacenamiento.*
+
+- **Supabase Auth:** Registro, login, JWT, RLS (Row Level Security). Manejo completo de sesiones.
+- **Supabase Database (PostgreSQL):** Base de datos relacional con las tablas: `profiles`, `modules`, `lessons`, `user_progress`. Políticas RLS para aislamiento por usuario.
+- **Supabase Storage:** Almacenamiento de archivos de audio nativo (MP3/WebM).
+- **SQL (RLS Policies):** Reglas de seguridad a nivel de fila para garantizar que cada usuario solo accede a sus propios datos.
 
 ---
 
-# ⚠️ Riesgos y Desafíos del Proyecto
+## 🚀 Despliegue e Infraestructura
+
+- **Vercel:** Hosting del frontend SPA con deploys automáticos desde GitHub. Preview URLs por PR. Sin costo en capa gratuita.
+- **GitHub:** Repositorio de código fuente con control de versiones.
+- **ESLint + Prettier:** Calidad de código y formateo automático.
+
+---
+
+## ❌ Excluido del prototipo (futuras fases)
+
+| Tecnología | Fase futura |
+|------------|-------------|
+| Flutter / React Native | App móvil nativa |
+| FastAPI + Pydantic + SQLAlchemy | Backend serverless propio |
+| Algoritmo SM-2 / scikit-learn | Módulo de IA y personalización |
+| TensorFlow Lite / Whisper | Inferencia en dispositivo |
+| IndexedDB / Drift (SQLite) | Modo offline |
+| Upstash Redis | Caché y sesiones |
+| Firebase Cloud Messaging | Notificaciones push |
+| Lottie | Animaciones avanzadas |
+
+---
+
+# ⚠️ Riesgos y Desafíos del Prototipo
 
 ## 🔴 Riesgos altos
 
-### Limitaciones de Serverless en Vercel (Prototipo)
-Las funciones gratuitas tienen un límite de tiempo de ejecución (10s) y un límite de tamaño de empaquetado (250MB), lo cual puede ser restrictivo si se usan bibliotecas de IA muy pesadas.
+### Dependencia de conectividad a internet
+El prototipo no tiene modo offline. Usuarios en zonas de la Sierra Nevada con conectividad limitada no podrán usarlo.
 
 **Mitigación:**
-- Usar versiones ligeras de librerías.
-- Pre-calcular modelos o realizar inferencia del lado del cliente (TensorFlow Lite).
-- Optimizar consultas pesadas.
+- El prototipo es una validación inicial; el sistema completo incluirá offline-first.
+- Priorizar pruebas en entornos con conexión estable.
 
----
-
-### Acceso a la comunidad kogui
-La comunidad puede no permitir el acceso o retirar su colaboración.
+### Contenido cultural sensible
+El material educativo (vocabulario, audios, notas culturales) debe ser respetuoso con la comunidad Kogui.
 
 **Mitigación:**
-- Involucrar líderes comunitarios desde el inicio
-- Acuerdos de colaboración formales
-- Participación activa de la comunidad
-
----
-
-### Escasez de hablantes nativos
-Número limitado de hablantes activos para grabación de audios.
-
-**Mitigación:**
-- Talleres de grabación con hablantes mayores
-- Priorizar vocabulario esencial
-- Crear archivo digital sostenible
-
----
-
-### Complejidad de sincronización offline
-La sincronización bidireccional es técnicamente compleja.
-
-**Mitigación:**
-- Arquitectura offline-first
-- Cola local de eventos
-- Pruebas exhaustivas
-
----
-
-### Exactitud lingüística del contenido
-Errores pueden enseñar información incorrecta o generar conflictos culturales.
-
-**Mitigación:**
-- Validación por lingüistas y líderes culturales
-- Aprobación obligatoria antes de publicación
-- Sistema de reporte de errores
+- Todo el contenido debe ser validado por miembros de la comunidad antes de publicarse.
+- Incluir atribución y reconocimiento de propiedad intelectual.
 
 ---
 
 ## 🟠 Riesgos medios
 
-### Limitaciones del NLP para lengua kogui
-No existen modelos preentrenados adecuados.
+### Limitaciones de Supabase Storage (capa gratuita)
+Almacenamiento limitado en la capa gratuita (1 GB). Suficiente para audios del prototipo pero escalable mediante upgrade.
 
 **Mitigación:**
-- Uso de audio grabado por nativos en el MVP
-- Entrenamiento futuro con datos propios
+- Comprimir audios (MP3 128kbps).
+- Usar Web Speech API como fallback para minimizar Storage.
 
----
-
-### Conectividad limitada
-Zonas de la Sierra Nevada tienen acceso muy restringido a internet.
+### Escasez de hablantes nativos para grabaciones
+Número limitado de hablantes activos para grabación de audios auténticos.
 
 **Mitigación:**
-- Diseño offline desde el inicio
-- Descarga completa de módulos
-- Pruebas en campo
-
----
-
-### Dispositivos de gama baja
-Usuarios potenciales pueden tener smartphones con pocos recursos.
-
-**Mitigación:**
-- Optimización para Android 8+
-- Audio comprimido
-- Pruebas en dispositivos económicos
-
----
-
-### Sostenibilidad del proyecto
-Riesgo de abandono tras la fase académica.
-
-**Mitigación:**
-- Documentación completa
-- Transferencia a institución u ONG
-- Posible liberación como software open-source
-
----
-
-### Propiedad intelectual del contenido
-Conflictos sobre la titularidad del material cultural.
-
-**Mitigación:**
-- Acuerdo legal claro
-- Propiedad para la comunidad
-- Licencias adecuadas
+- Talleres de grabación con hablantes mayores.
+- Priorizar vocabulario esencial para las 3 lecciones del prototipo.
+- Usar síntesis de voz como fallback temporal.
 
 ---
 
 ## 🟢 Riesgos bajos
 
 ### Adopción tecnológica limitada
-Personas mayores pueden no usar smartphones con facilidad.
+Usuarios mayores pueden no estar familiarizados con aplicaciones web.
 
 **Mitigación:**
-- Interfaz simple e intuitiva
-- Uso de iconos visuales
-- Talleres de alfabetización digital
-- Enfoque inicial en jóvenes
+- Interfaz simple con iconografía visual.
+- Feedback inmediato en cada interacción.
+- Curva de aprendizaje menor a 5 minutos.
+
+### Sostenibilidad del proyecto
+Riesgo de abandono tras la fase académica.
+
+**Mitigación:**
+- Documentación completa del prototipo.
+- Código modular y extensible para facilitar migración futura.
+- Posible liberación como software open-source.
 
 ---
 
 # 📌 Conclusión
 
-El proyecto combina tecnologías modernas con un enfoque social y cultural sensible.  
-La identificación temprana de riesgos permite diseñar estrategias que aumenten la viabilidad y el impacto positivo del prototipo.
+El prototipo web con **React (Vite) + Supabase + Vercel** minimiza costos de infraestructura y acelera la validación del flujo de aprendizaje. Las tecnologías del sistema completo (FastAPI, Flutter, IA, offline) se adoptarán en fases posteriores según los aprendizajes de este prototipo.
