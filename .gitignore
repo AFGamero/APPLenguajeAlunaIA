@@ -1,6 +1,6 @@
-node_modules/
-.agents/
-.DS_Store
-package-lock.json
-package.json
-skills-lock.json
+/node_modules/
+/.agents/
+/.DS_Store
+/package-lock.json
+/package.json
+/skills-lock.json
