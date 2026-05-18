@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/lib/apiClient';
+import type { ModuleResponse } from '@/types/api';
 import styles from './Home.module.css';
+
+type LessonState = 'COMPLETED' | 'AVAILABLE' | 'LOCKED';
 
 interface ModuleData {
   id: string;
@@ -9,18 +13,9 @@ interface ModuleData {
   description: string;
 }
 
-interface LessonData {
-  id: string;
-  title: string;
-  order_index: number;
-  xp_reward: number;
-}
-
-type LessonState = 'COMPLETED' | 'AVAILABLE' | 'LOCKED';
-
-interface ExtendedLesson extends LessonData {
+type ExtendedLesson = ModuleResponse['lessons'][number] & {
   state: LessonState;
-}
+};
 
 export default function Home() {
   const { user } = useAuth();
@@ -36,48 +31,25 @@ export default function Home() {
     async function loadLearningPath() {
       if (!user) return;
       try {
-        const { supabase } = await import('@/lib/supabaseClient');
-        
-        // 1. Obtener el Módulo 1 (orden = 1)
-        const { data: moduleDataRaw, error: moduleError } = await supabase
-          .from('modules')
-          .select('id, title, description')
-          .eq('order_index', 1)
-          .single();
+        const [modulesData, progressData] = await Promise.all([
+          apiClient.modules.list(),
+          apiClient.progress.list(),
+        ]);
+        const moduleData = modulesData.find((item) => item.order_index === 1);
+        if (!moduleData) {
+          throw new Error('Módulo no encontrado');
+        }
 
-        if (moduleError) throw moduleError;
-        const moduleData = moduleDataRaw as any;
+        const completedLessonIds = new Set(progressData.items.map((item) => item.lesson_id));
 
-        // 2. Obtener las lecciones del módulo
-        const { data: lessonsDataRaw, error: lessonsError } = await supabase
-          .from('lessons')
-          .select('id, title, order_index, xp_reward')
-          .eq('module_id', moduleData.id)
-          .order('order_index', { ascending: true });
-
-        if (lessonsError) throw lessonsError;
-        const lessonsData = lessonsDataRaw as any[];
-
-        // 3. Obtener el progreso del usuario para este módulo
-        const { data: progressDataRaw, error: progressError } = await supabase
-          .from('user_progress')
-          .select('lesson_id')
-          .eq('user_id', user.id);
-
-        if (progressError) throw progressError;
-        const progressData = progressDataRaw as any[];
-
-        const completedLessonIds = new Set(progressData.map((p: any) => p.lesson_id));
-
-        // 4. Calcular el estado de cada lección (Desbloqueo progresivo)
-        const extendedLessons: ExtendedLesson[] = lessonsData.map((lesson: any, index: number, arr: any[]) => {
+        const extendedLessons: ExtendedLesson[] = moduleData.lessons.map((lesson, index, arr) => {
           let state: LessonState = 'LOCKED';
-          
+
           if (completedLessonIds.has(lesson.id)) {
             state = 'COMPLETED';
           } else if (
-            index === 0 || // La primera siempre disponible si no está completada
-            completedLessonIds.has(arr[index - 1].id) // Disponible si la anterior se completó
+            index === 0 ||
+            completedLessonIds.has(arr[index - 1].id)
           ) {
             state = 'AVAILABLE';
           }
@@ -86,7 +58,11 @@ export default function Home() {
         });
 
         if (isMounted) {
-          setModule(moduleData);
+          setModule({
+            id: moduleData.id,
+            title: moduleData.title,
+            description: moduleData.description || '',
+          });
           setLessons(extendedLessons);
           setLoading(false);
         }

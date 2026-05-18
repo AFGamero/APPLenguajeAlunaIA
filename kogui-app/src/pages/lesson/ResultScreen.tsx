@@ -23,7 +23,7 @@ export default function ResultScreen({ lessonId, score, total, xpReward }: Props
     async function save() {
       if (!user) return;
       try {
-        const result = await saveProgress(user.id, lessonId, score, total, xpReward);
+        const result = await saveProgress(lessonId, score, total, xpReward);
         if (isMounted) setStats(result);
       } catch (err) {
         console.error('Error guardando el progreso:', err);

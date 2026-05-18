@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { isAdminEnabled } from '@/lib/features';
 
 export default function AdminRoute() {
   const { user, userRole, loading } = useAuth();
@@ -14,6 +15,10 @@ export default function AdminRoute() {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdminEnabled) {
+    return <Navigate to="/" replace />;
   }
 
   if (userRole !== 'admin') {

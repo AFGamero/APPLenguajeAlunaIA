@@ -4,30 +4,16 @@
 // ============================================================
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/lib/apiClient';
 import { calculateCurrentStreak } from '@/lib/streak';
+import type { ProfileResponse, ProgressItem } from '@/types/api';
 import styles from './Profile.module.css';
-
-interface ProfileData {
-  xp_total: number;
-  streak_days: number;
-  last_activity: string | null;
-}
-
-interface ProgressHistory {
-  id: string;
-  completed_at: string;
-  score: number;
-  xp_earned: number;
-  lessons: {
-    title: string;
-  };
-}
 
 export default function Profile() {
   const { user } = useAuth();
   
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [history, setHistory] = useState<ProgressHistory[]>([]);
+  const [profile, setProfile] = useState<ProfileResponse | null>(null);
+  const [history, setHistory] = useState<ProgressItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,35 +23,14 @@ export default function Profile() {
     async function loadProfile() {
       if (!user) return;
       try {
-        const { supabase } = await import('@/lib/supabaseClient');
-        
-        // Cargar perfil
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('xp_total, streak_days, last_activity')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError) throw profileError;
-
-        // Cargar historial
-        const { data: progressData, error: progressError } = await supabase
-          .from('user_progress')
-          .select(`
-            id,
-            completed_at,
-            score,
-            xp_earned,
-            lessons ( title )
-          `)
-          .eq('user_id', user.id)
-          .order('completed_at', { ascending: false });
-
-        if (progressError) throw progressError;
+        const [profileData, progressData] = await Promise.all([
+          apiClient.profile.get(),
+          apiClient.progress.list(),
+        ]);
 
         if (isMounted) {
           setProfile(profileData);
-          setHistory(progressData as any);
+          setHistory(progressData.items);
           setLoading(false);
         }
       } catch (err: any) {
@@ -104,7 +69,7 @@ export default function Profile() {
     );
   }
 
-  const userName = user?.user_metadata?.full_name || user?.email || 'Usuario';
+  const userName = user?.display_name || user?.email || 'Usuario';
   const initial = userName.charAt(0).toUpperCase();
   
   const realStreak = profile ? calculateCurrentStreak(profile.streak_days, profile.last_activity) : 0;
@@ -150,7 +115,7 @@ export default function Profile() {
               {history.map((item) => (
                 <div key={item.id} className={styles.historyItem}>
                   <div className={styles.historyItemMain}>
-                    <span className={styles.lessonTitle}>{item.lessons?.title || 'Lección'}</span>
+                    <span className={styles.lessonTitle}>{item.lesson_title || 'Lección'}</span>
                     <span className={styles.lessonDate}>
                       {new Date(item.completed_at).toLocaleDateString()}
                     </span>

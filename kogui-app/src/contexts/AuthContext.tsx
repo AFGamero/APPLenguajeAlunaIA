@@ -1,18 +1,19 @@
-// ============================================================
-// Kogui App — AuthContext
-// Provee estado de sesión reactivo basado en Supabase Auth
-// ============================================================
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import type { User, Session, SignInWithPasswordCredentials, SignUpWithPasswordCredentials } from '@supabase/supabase-js';
+import { apiClient, clearAccessToken, getAccessToken, setAccessToken } from '@/lib/apiClient';
+import type { ApiUser, AuthSession, TokenResponse } from '@/types/api';
 
 interface AuthContextValue {
-  user: User | null;
-  session: Session | null;
+  user: ApiUser | null;
+  session: AuthSession | null;
   userRole: string | null;
   loading: boolean;
-  signIn: (credentials: SignInWithPasswordCredentials) => Promise<{ data: any; error: any }>;
-  signUp: (credentials: SignUpWithPasswordCredentials) => Promise<{ data: any; error: any }>;
-  signOut: () => Promise<{ error: any }>;
+  signIn: (credentials: { email: string; password: string }) => Promise<{ data: TokenResponse | null; error: Error | null }>;
+  signUp: (credentials: {
+    email: string;
+    password: string;
+    display_name: string;
+  }) => Promise<{ data: TokenResponse | null; error: Error | null }>;
+  signOut: () => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -25,96 +26,71 @@ const AuthContext = createContext<AuthContextValue>({
   signOut: async () => ({ error: new Error('Auth not initialized') }),
 });
 
-// Detectamos si Supabase está configurado correctamente
-const isSupabaseConfigured = (): boolean => {
-  const url = import.meta.env.VITE_SUPABASE_URL as string;
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-  return (
-    !!url &&
-    !!key &&
-    !url.startsWith('<') &&
-    !key.startsWith('<') &&
-    url !== 'undefined' &&
-    key !== 'undefined'
-  );
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<ApiUser | null>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Si Supabase no está configurado, no intentamos conectarnos
-    if (!isSupabaseConfigured()) {
-      console.warn('[Nebbi] Supabase no configurado. Auth deshabilitado en modo demo.');
-      return;
+    async function bootstrapAuth() {
+      const token = getAccessToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const currentUser = await apiClient.auth.me();
+        setSession({ accessToken: token });
+        setUser(currentUser);
+        setUserRole(currentUser.role);
+      } catch (err) {
+        console.warn('[Nebbi] Error al restaurar sesión:', err);
+        clearAccessToken();
+        setSession(null);
+        setUser(null);
+        setUserRole(null);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    let unsubscribe: (() => void) | null = null;
-
-    // Carga asíncrona del cliente Supabase solo cuando está configurado
-    import('@/lib/supabaseClient')
-      .then(({ supabase }) => {
-        // Suscribirse a cambios de sesión
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (_event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            
-            if (session?.user) {
-              const profileQuery: any = supabase.from('profiles');
-              const { data } = await profileQuery.select('role').eq('id', session.user.id).single();
-              setUserRole(data?.role || 'estudiante');
-            } else {
-              setUserRole(null);
-            }
-            setLoading(false);
-          }
-        );
-        unsubscribe = () => subscription.unsubscribe();
-
-        // También cargar sesión inicial
-        return supabase.auth.getSession();
-      })
-      .then(async (result) => {
-        if (result) {
-          const { data: { session } } = result;
-          setSession(session);
-          setUser(session?.user ?? null);
-          if (session?.user) {
-            const { supabase } = await import('@/lib/supabaseClient');
-            const profileQuery: any = supabase.from('profiles');
-            const { data } = await profileQuery.select('role').eq('id', session.user.id).single();
-            setUserRole(data?.role || 'estudiante');
-          }
-        }
-        setLoading(false);
-      })
-      .catch(err => {
-        console.warn('[Nebbi] Error al inicializar auth:', err);
-        setLoading(false);
-      });
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
+    bootstrapAuth();
   }, []);
 
-  const signIn = async (credentials: SignInWithPasswordCredentials) => {
-    const { supabase } = await import('@/lib/supabaseClient');
-    return supabase.auth.signInWithPassword(credentials);
+  const signIn = async (credentials: { email: string; password: string }) => {
+    try {
+      const data = await apiClient.auth.login(credentials);
+      setAccessToken(data.access_token);
+      setSession({ accessToken: data.access_token });
+      setUser(data.user);
+      setUserRole(data.user.role);
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error: error as Error };
+    }
   };
 
-  const signUp = async (credentials: SignUpWithPasswordCredentials) => {
-    const { supabase } = await import('@/lib/supabaseClient');
-    return supabase.auth.signUp(credentials);
+  const signUp = async (credentials: { email: string; password: string; display_name: string }) => {
+    try {
+      const data = await apiClient.auth.register(credentials);
+      setAccessToken(data.access_token);
+      setSession({ accessToken: data.access_token });
+      setUser(data.user);
+      setUserRole(data.user.role);
+      return { data, error: null };
+    } catch (error) {
+      return { data: null, error: error as Error };
+    }
   };
 
   const signOut = async () => {
-    const { supabase } = await import('@/lib/supabaseClient');
-    return supabase.auth.signOut();
+    clearAccessToken();
+    setSession(null);
+    setUser(null);
+    setUserRole(null);
+    return { error: null };
   };
 
   return (
@@ -127,4 +103,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuthContext() {
   return useContext(AuthContext);
 }
-

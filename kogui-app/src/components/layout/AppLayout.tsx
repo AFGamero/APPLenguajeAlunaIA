@@ -1,5 +1,6 @@
 import { Outlet, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { isAdminEnabled } from '@/lib/features';
 import { useState, useEffect } from 'react';
 import styles from './AppLayout.module.css';
 
@@ -35,7 +36,7 @@ export default function AppLayout() {
     }
   };
 
-  const userName = user?.user_metadata?.full_name || user?.email || 'Usuario';
+  const userName = user?.display_name || user?.email || 'Usuario';
   const initial = userName.charAt(0).toUpperCase();
 
   return (
@@ -48,7 +49,7 @@ export default function AppLayout() {
           </Link>
 
           <div className={styles.userSection}>
-            {userRole === 'admin' && (
+            {isAdminEnabled && userRole === 'admin' && (
               <Link to="/admin" className={styles.adminLink}>
                 ⚙️ Panel Admin
               </Link>

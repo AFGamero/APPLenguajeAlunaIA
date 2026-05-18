@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/lib/apiClient';
+import type { LessonDetailResponse } from '@/types/api';
 import VocabScreen from './VocabScreen';
 import MultipleChoice from './MultipleChoice';
 import MatchExercise from './MatchExercise';
@@ -8,22 +10,12 @@ import WriteExercise from './WriteExercise';
 import ResultScreen from './ResultScreen';
 import styles from './LessonPage.module.css';
 
-interface LessonData {
-  id: string;
-  title: string;
-  xp_reward: number;
-  content: {
-    vocab: any[];
-    exercises: any[];
-  };
-}
-
 export default function LessonPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [lesson, setLesson] = useState<LessonData | null>(null);
+  const [lesson, setLesson] = useState<LessonDetailResponse | null>(null);
   const [steps, setSteps] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -36,17 +28,7 @@ export default function LessonPage() {
     async function loadLesson() {
       if (!user || !id) return;
       try {
-        const { supabase } = await import('@/lib/supabaseClient');
-        
-        const { data, error } = await supabase
-          .from('lessons')
-          .select('id, title, xp_reward, content')
-          .eq('id', id)
-          .single();
-
-        if (error) throw error;
-
-        const typedData = data as LessonData;
+        const typedData = await apiClient.lessons.get(id);
         const content = typedData.content;
         
         // Flatten into a single array of steps

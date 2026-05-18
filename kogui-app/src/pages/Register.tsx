@@ -36,22 +36,15 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      // Pasamos el nombre en metadata para que el trigger lo use
-      const { error: signUpError } = await signUp({ 
-        email, 
+      const { error: signUpError } = await signUp({
+        email,
         password,
-        options: {
-          data: {
-            full_name: name
-          }
-        }
+        display_name: name.trim(),
       });
       
       if (signUpError) {
-        if (signUpError.message.includes('User already registered')) {
+        if (signUpError.message.includes('Ya existe una cuenta con ese correo')) {
           setError('El correo electrónico ya está en uso.');
-        } else if (signUpError.message === 'Auth not initialized') {
-          setError('La autenticación no está disponible en este momento.');
         } else {
           setError(signUpError.message);
         }
@@ -64,6 +57,7 @@ export default function Register() {
     } catch (err) {
       console.error(err);
       setError('Ocurrió un error inesperado al registrar la cuenta.');
+    } finally {
       setIsLoading(false);
     }
   };

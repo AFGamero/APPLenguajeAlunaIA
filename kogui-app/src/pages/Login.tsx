@@ -26,10 +26,8 @@ export default function Login() {
       const { error: signInError } = await signIn({ email, password });
       
       if (signInError) {
-        if (signInError.message === 'Invalid login credentials') {
+        if (signInError.message === 'Credenciales incorrectas') {
           setError('Email o contraseña incorrectos.');
-        } else if (signInError.message === 'Auth not initialized') {
-            setError('La autenticación no está disponible en este momento.');
         } else {
           setError(signInError.message);
         }
@@ -42,6 +40,7 @@ export default function Login() {
     } catch (err) {
       console.error(err);
       setError('Ocurrió un error inesperado al iniciar sesión.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -119,4 +118,3 @@ export default function Login() {
     </main>
   );
 }
-
