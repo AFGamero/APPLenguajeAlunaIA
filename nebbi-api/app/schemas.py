@@ -4,20 +4,24 @@
 from datetime import datetime
 from uuid import UUID
 from typing import Any, Optional
-from pydantic import BaseModel, EmailStr
+from typing_extensions import Annotated
+from pydantic import BaseModel, EmailStr, StringConstraints
+
+
+PasswordStr = Annotated[str, StringConstraints(min_length=6, max_length=72)]
 
 
 # ── Auth ──────────────────────────────────────────────────────
 
 class RegisterRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: PasswordStr
     display_name: str
 
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str
+    password: PasswordStr
 
 
 class UserOut(BaseModel):
