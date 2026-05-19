@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
@@ -8,6 +10,7 @@ from ..models import Profile, User
 from ..schemas import LoginRequest, RegisterRequest, TokenResponse, UserOut
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 def _build_user_out(profile: Profile) -> UserOut:
@@ -21,26 +24,37 @@ def _build_user_out(profile: Profile) -> UserOut:
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> TokenResponse:
-    existing_user = db.query(User).filter(User.email == payload.email).first()
-    if existing_user is not None:
+    try:
+        existing_user = db.query(User).filter(User.email == payload.email).first()
+        if existing_user is not None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Ya existe una cuenta con ese correo",
+            )
+
+        user = User(email=payload.email, hashed_password=hash_password(payload.password))
+        profile = Profile(display_name=payload.display_name, user=user)
+
+        db.add(user)
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
+        db.refresh(user)
+
+        token = create_access_token({"sub": str(user.id)})
+        profile.user = user
+
+        return TokenResponse(access_token=token, user=_build_user_out(profile))
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        logger.exception("Error during user registration")
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Ya existe una cuenta con ese correo",
-        )
-
-    user = User(email=payload.email, hashed_password=hash_password(payload.password))
-    profile = Profile(display_name=payload.display_name, user=user)
-
-    db.add(user)
-    db.add(profile)
-    db.commit()
-    db.refresh(profile)
-    db.refresh(user)
-
-    token = create_access_token({"sub": str(user.id)})
-    profile.user = user
-
-    return TokenResponse(access_token=token, user=_build_user_out(profile))
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"register_failed: {exc}",
+        ) from exc
 
 
 @router.post("/login", response_model=TokenResponse)
