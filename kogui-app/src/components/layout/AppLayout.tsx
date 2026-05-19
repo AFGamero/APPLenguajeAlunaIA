@@ -2,6 +2,7 @@ import { Outlet, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEnabled } from '@/lib/features';
 import { useState, useEffect } from 'react';
+import kwiKwiLogo from '@/assets/KwiKwiLogo.png';
 import styles from './AppLayout.module.css';
 
 export default function AppLayout() {
@@ -44,8 +45,8 @@ export default function AppLayout() {
       <header className={styles.navbar}>
         <div className={styles.navContainer}>
           <Link to="/" className={styles.logoLink}>
-            <div className={styles.logoIcon}>🌿</div>
-            <span className={styles.appName}>Nebbi</span>
+            <img src={kwiKwiLogo} alt="kwi kwi logo" className={styles.logoImage} />
+            <span className={styles.appName}>kwi kwi</span>
           </Link>
 
           <div className={styles.userSection}>

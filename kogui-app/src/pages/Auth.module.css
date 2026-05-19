@@ -34,17 +34,11 @@
   margin-bottom: var(--space-8);
 }
 
-.logoIcon {
+.logoImage {
   width: 72px;
   height: 72px;
   margin: 0 auto var(--space-4);
-  background: var(--gradient-primary);
-  border-radius: var(--radius-xl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  box-shadow: var(--shadow-glow-primary);
+  object-fit: contain;
   animation: bounceIn var(--transition-spring) forwards;
 }
 

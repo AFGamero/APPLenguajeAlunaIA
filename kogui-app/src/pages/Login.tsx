@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import kwiKwiLogo from '@/assets/KwiKwiLogo.png';
 import styles from './Auth.module.css';
 
 export default function Login() {
@@ -49,8 +50,8 @@ export default function Login() {
     <main className={styles.page}>
       <div className={styles.card}>
         <div className={styles.logoArea}>
-          <div className={styles.logoIcon}>🌿</div>
-          <h1 className={styles.appName}>Nebbi</h1>
+          <img src={kwiKwiLogo} alt="kwi kwi logo" className={styles.logoImage} />
+          <h1 className={styles.appName}>kwi kwi</h1>
           <p className={styles.tagline}>Aprende la lengua de la Sierra Nevada</p>
         </div>
 

@@ -81,7 +81,7 @@ export default function Profile() {
           <div className={styles.avatar}>{initial}</div>
           <div>
             <h1 className={styles.name}>{userName}</h1>
-            <p className={styles.sub}>Estudiante de Nebbi</p>
+            <p className={styles.sub}>Estudiante de kwi kwi</p>
           </div>
         </header>
 

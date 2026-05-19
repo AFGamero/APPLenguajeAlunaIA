@@ -21,8 +21,10 @@
   margin-bottom: var(--space-8);
 }
 
-.logoIcon {
-  font-size: 1.5rem;
+.logoImage {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
 .logoText {

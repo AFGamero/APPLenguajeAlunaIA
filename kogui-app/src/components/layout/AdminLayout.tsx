@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import kwiKwiLogo from '@/assets/KwiKwiLogo.png';
 import styles from './AdminLayout.module.css';
 
 export default function AdminLayout() {
@@ -40,8 +41,8 @@ export default function AdminLayout() {
     <div className={styles.adminLayout}>
       <aside className={styles.sidebar}>
         <div className={styles.logoContainer}>
-          <span className={styles.logoIcon}>🍃</span>
-          <span className={styles.logoText}>Nebbi Admin</span>
+          <img src={kwiKwiLogo} alt="kwi kwi logo" className={styles.logoImage} />
+          <span className={styles.logoText}>kwi kwi Admin</span>
         </div>
         
         <nav className={styles.nav}>
