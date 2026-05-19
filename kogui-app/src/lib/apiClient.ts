@@ -8,7 +8,8 @@ import type {
   ApiUser,
 } from '@/types/api';
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000';
+const rawApiBaseUrl = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
+const API_BASE_URL = (rawApiBaseUrl || 'http://localhost:8000').replace(/\/+$/, '');
 const TOKEN_STORAGE_KEY = 'nebbi_access_token';
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -23,19 +24,29 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers,
+    });
+  } catch (error) {
+    const isMixedContent =
+      window.location.protocol === 'https:' && API_BASE_URL.startsWith('http://');
+    const message = isMixedContent
+      ? `No se pudo conectar con la API (${API_BASE_URL}). El frontend está en HTTPS y la API en HTTP.`
+      : `No se pudo conectar con la API (${API_BASE_URL}). Verifica VITE_API_URL y que el backend esté ejecutándose.`;
+    throw new Error(message);
+  }
 
   if (!response.ok) {
     let message = `HTTP ${response.status}`;
-    try {
-      const errorBody = await response.json();
-      message = errorBody.detail || message;
-    } catch {
-      const rawText = await response.text();
-      if (rawText) {
+    const rawText = await response.text();
+    if (rawText) {
+      try {
+        const errorBody = JSON.parse(rawText) as { detail?: string };
+        message = errorBody.detail || rawText;
+      } catch {
         message = rawText;
       }
     }
