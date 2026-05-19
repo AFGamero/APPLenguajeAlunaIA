@@ -8,7 +8,7 @@ from typing_extensions import Annotated
 from pydantic import BaseModel, EmailStr, StringConstraints
 
 
-PasswordStr = Annotated[str, StringConstraints(min_length=6, max_length=72)]
+PasswordStr = Annotated[str, StringConstraints(min_length=6)]
 
 
 # ── Auth ──────────────────────────────────────────────────────
