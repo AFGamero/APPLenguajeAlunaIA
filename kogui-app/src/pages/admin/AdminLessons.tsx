@@ -1,40 +1,24 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { apiClient } from '@/lib/apiClient';
 import { Link } from 'react-router-dom';
+import type { AdminLessonListItem, AdminModule } from '@/types/api';
 import styles from './AdminLessons.module.css';
 
-interface Module {
-  id: string;
-  title: string;
-  order_index: number;
-}
-
-interface Lesson {
-  id: string;
-  module_id: string;
-  title: string;
-  order_index: number;
-  xp_reward: number;
-}
-
 export default function AdminLessons() {
-  const [modules, setModules] = useState<Module[]>([]);
-  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [modules, setModules] = useState<AdminModule[]>([]);
+  const [lessons, setLessons] = useState<AdminLessonListItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const modulesQuery: any = supabase.from('modules');
-        const lessonsQuery: any = supabase.from('lessons');
-
         const [modulesRes, lessonsRes] = await Promise.all([
-          modulesQuery.select('*').order('order_index'),
-          lessonsQuery.select('id, module_id, title, order_index, xp_reward').order('order_index')
+          apiClient.admin.modules(),
+          apiClient.admin.lessons(),
         ]);
 
-        if (modulesRes.data) setModules(modulesRes.data);
-        if (lessonsRes.data) setLessons(lessonsRes.data);
+        setModules(modulesRes);
+        setLessons(lessonsRes);
       } catch (err) {
         console.error('Error fetching lessons data', err);
       } finally {
@@ -50,12 +34,11 @@ export default function AdminLessons() {
       return;
     }
     try {
-      const lessonsQuery: any = supabase.from('lessons');
-      const { error } = await lessonsQuery.delete().eq('id', lessonId);
-      if (error) throw error;
+      await apiClient.admin.deleteLesson(lessonId);
       setLessons(lessons.filter(l => l.id !== lessonId));
-    } catch (err: any) {
-      alert(`Error eliminando la lección: ${err.message}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error inesperado';
+      alert(`Error eliminando la lección: ${message}`);
     }
   };
 

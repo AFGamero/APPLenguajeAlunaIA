@@ -1,4 +1,9 @@
 import type {
+  AdminLessonDetail,
+  AdminLessonListItem,
+  AdminLessonUpsert,
+  AdminModule,
+  AdminStatsResponse,
   ModuleResponse,
   LessonDetailResponse,
   ProfileResponse,
@@ -115,6 +120,37 @@ export const apiClient = {
       return request<ProfileResponse>('/profile', {
         method: 'PATCH',
         body: JSON.stringify(payload),
+      });
+    },
+  },
+  admin: {
+    stats() {
+      return request<AdminStatsResponse>('/admin/stats');
+    },
+    modules() {
+      return request<AdminModule[]>('/admin/modules');
+    },
+    lessons() {
+      return request<AdminLessonListItem[]>('/admin/lessons');
+    },
+    getLesson(lessonId: string) {
+      return request<AdminLessonDetail>(`/admin/lessons/${lessonId}`);
+    },
+    createLesson(payload: AdminLessonUpsert) {
+      return request<AdminLessonDetail>('/admin/lessons', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    },
+    updateLesson(lessonId: string, payload: AdminLessonUpsert) {
+      return request<AdminLessonDetail>(`/admin/lessons/${lessonId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+    },
+    async deleteLesson(lessonId: string) {
+      await request<{ deleted: boolean }>(`/admin/lessons/${lessonId}`, {
+        method: 'DELETE',
       });
     },
   },

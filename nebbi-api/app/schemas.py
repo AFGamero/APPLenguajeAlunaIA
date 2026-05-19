@@ -108,3 +108,52 @@ class ProfileResponse(BaseModel):
 
 class ProfileUpdate(BaseModel):
     display_name: str
+
+
+# ── Admin ──────────────────────────────────────────────────────
+
+class AdminStatsResponse(BaseModel):
+    users: int
+    lessons_completed: int
+    total_xp: int
+
+
+class AdminModuleResponse(BaseModel):
+    id: UUID
+    title: str
+    order_index: int
+
+    model_config = {"from_attributes": True}
+
+
+class AdminLessonListItem(BaseModel):
+    id: UUID
+    module_id: UUID
+    title: str
+    order_index: int
+    xp_reward: int
+
+    model_config = {"from_attributes": True}
+
+
+class AdminLessonDetailResponse(BaseModel):
+    id: UUID
+    module_id: UUID
+    title: str
+    order_index: int
+    xp_reward: int
+    content: dict[str, Any]
+
+    model_config = {"from_attributes": True}
+
+
+class AdminLessonUpsert(BaseModel):
+    module_id: UUID
+    title: str
+    order_index: int
+    xp_reward: int
+    content: dict[str, Any]
+
+
+class AdminDeleteResponse(BaseModel):
+    deleted: bool

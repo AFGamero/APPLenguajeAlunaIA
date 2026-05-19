@@ -4,7 +4,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
-from .routers import auth, lessons, modules, profile, progress
+from .routers import admin, auth, lessons, modules, profile, progress
 
 app = FastAPI(
     title="Nebbi API",
@@ -39,3 +39,4 @@ app.include_router(modules.router, prefix="/modules", tags=["Modules"])
 app.include_router(lessons.router, prefix="/lessons", tags=["Lessons"])
 app.include_router(progress.router, prefix="/progress", tags=["Progress"])
 app.include_router(profile.router, prefix="/profile", tags=["Profile"])
+app.include_router(admin.router, prefix="/admin", tags=["Admin"])

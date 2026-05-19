@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { apiClient } from '@/lib/apiClient';
 import styles from './AdminDashboard.module.css';
 
 export default function AdminDashboard() {
@@ -13,23 +13,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const { count: usersCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true });
-
-        const { count: lessonsCount } = await supabase
-          .from('user_progress')
-          .select('*', { count: 'exact', head: true });
-
-        // Sum XP (Requires a bit of workaround if no sum aggregate, but we can just select all and reduce for prototype)
-        const profileQuery: any = supabase.from('profiles');
-        const { data: xpData } = await profileQuery.select('xp_total');
-        const totalXp = xpData?.reduce((acc: number, curr: any) => acc + (curr.xp_total || 0), 0) || 0;
-
+        const data = await apiClient.admin.stats();
         setStats({
-          users: usersCount || 0,
-          lessonsCompleted: lessonsCount || 0,
-          totalXp
+          users: data.users,
+          lessonsCompleted: data.lessons_completed,
+          totalXp: data.total_xp,
         });
       } catch (err) {
         console.error('Error fetching admin stats:', err);

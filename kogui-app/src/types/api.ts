@@ -66,3 +66,46 @@ export interface ProfileResponse {
   streak_days: number;
   last_activity: string | null;
 }
+
+export interface AdminStatsResponse {
+  users: number;
+  lessons_completed: number;
+  total_xp: number;
+}
+
+export interface AdminModule {
+  id: string;
+  title: string;
+  order_index: number;
+}
+
+export interface AdminLessonListItem {
+  id: string;
+  module_id: string;
+  title: string;
+  order_index: number;
+  xp_reward: number;
+}
+
+export interface AdminLessonDetail {
+  id: string;
+  module_id: string;
+  title: string;
+  order_index: number;
+  xp_reward: number;
+  content: {
+    vocab: any[];
+    exercises: any[];
+  };
+}
+
+export interface AdminLessonUpsert {
+  module_id: string;
+  title: string;
+  order_index: number;
+  xp_reward: number;
+  content: {
+    vocab: any[];
+    exercises: any[];
+  };
+}

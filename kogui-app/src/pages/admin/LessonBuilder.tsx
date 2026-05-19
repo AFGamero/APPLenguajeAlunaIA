@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { apiClient } from '@/lib/apiClient';
 import { useNavigate, useParams } from 'react-router-dom';
+import type { AdminLessonUpsert, AdminModule } from '@/types/api';
 import styles from './LessonBuilder.module.css';
 
 export default function LessonBuilder() {
@@ -8,7 +9,7 @@ export default function LessonBuilder() {
   const navigate = useNavigate();
   const isEditMode = !!id;
 
-  const [modules, setModules] = useState<{id: string, title: string, order_index: number}[]>([]);
+  const [modules, setModules] = useState<AdminModule[]>([]);
   const [formData, setFormData] = useState({
     module_id: '',
     title: '',
@@ -30,71 +31,66 @@ export default function LessonBuilder() {
   useEffect(() => {
     async function loadData() {
       try {
-        const modulesQuery: any = supabase.from('modules');
-        const { data: mods } = await modulesQuery.select('id, title, order_index').order('order_index');
-        if (mods) {
-          setModules(mods);
-          if (!isEditMode && mods.length > 0) {
-            setFormData(prev => ({ ...prev, module_id: mods[0].id }));
-          }
+        const mods = await apiClient.admin.modules();
+        setModules(mods);
+        if (!isEditMode && mods.length > 0) {
+          setFormData(prev => ({ ...prev, module_id: mods[0].id }));
         }
 
         if (isEditMode) {
-          const lessonsQuery: any = supabase.from('lessons');
-          const { data: lesson } = await lessonsQuery.select('*').eq('id', id).single();
-          if (lesson) {
-            setFormData({
-              module_id: lesson.module_id,
-              title: lesson.title,
-              order_index: lesson.order_index,
-              xp_reward: lesson.xp_reward
-            });
-            if (lesson.content) {
-              setVocabList(lesson.content.vocab || []);
+          const lesson = await apiClient.admin.getLesson(id!);
+          setFormData({
+            module_id: lesson.module_id,
+            title: lesson.title,
+            order_index: lesson.order_index,
+            xp_reward: lesson.xp_reward
+          });
+          if (lesson.content) {
+            setVocabList(lesson.content.vocab || []);
               
-              // Mapear ejercicios de base de datos a formato de editor
-              const mappedExercises = (lesson.content.exercises || []).map((ex: any) => {
-                if (ex.type === 'match') {
-                  const mappedPairs = (ex.pairs || []).map((p: any) => ({
-                    kogui: p.kogui || '',
-                    espanol: p.spanish || p.espanol || ''
-                  }));
-                  while (mappedPairs.length < 4) {
-                    mappedPairs.push({ kogui: '', espanol: '' });
-                  }
-                  return {
-                    type: 'match',
-                    pairs: mappedPairs,
-                    hint: ex.hint || ''
-                  };
-                } else if (ex.type === 'write') {
-                  return {
-                    type: 'write',
-                    question: ex.prompt || '',
-                    answer: ex.answer || '',
-                    hint: ex.hint || ''
-                  };
-                } else if (ex.type === 'multiple_choice') {
-                  return {
-                    type: 'multiple_choice',
-                    question: ex.question || '',
-                    options: ex.options || ['', '', '', ''],
-                    correct_index: ex.correct_index !== undefined ? ex.correct_index : 0,
-                    hint: ex.hint || ''
-                  };
+            // Mapear ejercicios de base de datos a formato de editor
+            const mappedExercises = (lesson.content.exercises || []).map((ex: any) => {
+              if (ex.type === 'match') {
+                const mappedPairs = (ex.pairs || []).map((p: any) => ({
+                  kogui: p.kogui || '',
+                  espanol: p.spanish || p.espanol || ''
+                }));
+                while (mappedPairs.length < 4) {
+                  mappedPairs.push({ kogui: '', espanol: '' });
                 }
-                return ex;
-              });
-              setExercisesList(mappedExercises);
-            }
+                return {
+                  type: 'match',
+                  pairs: mappedPairs,
+                  hint: ex.hint || ''
+                };
+              } else if (ex.type === 'write') {
+                return {
+                  type: 'write',
+                  question: ex.prompt || '',
+                  answer: ex.answer || '',
+                  hint: ex.hint || ''
+                };
+              } else if (ex.type === 'multiple_choice') {
+                return {
+                  type: 'multiple_choice',
+                  question: ex.question || '',
+                  options: ex.options || ['', '', '', ''],
+                  correct_index: ex.correct_index !== undefined ? ex.correct_index : 0,
+                  hint: ex.hint || ''
+                };
+              }
+              return ex;
+            });
+            setExercisesList(mappedExercises);
           }
         } else {
           // Inicializar con listas vacías si es nuevo
           setVocabList([{ word_kogui: '', phonetic: '', translation: '', cultural_note: '' }]);
           setExercisesList([{ type: 'multiple_choice', question: '', options: ['', '', '', ''], correct_index: 0, hint: '' }]);
         }
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Error cargando datos';
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -156,23 +152,21 @@ export default function LessonBuilder() {
         };
       }
 
-      const lessonPayload = {
+      const lessonPayload: AdminLessonUpsert = {
         ...formData,
         content
       };
 
-      const lessonsQuery: any = supabase.from('lessons');
       if (isEditMode) {
-        const { error } = await lessonsQuery.update(lessonPayload).eq('id', id);
-        if (error) throw error;
+        await apiClient.admin.updateLesson(id!, lessonPayload);
       } else {
-        const { error } = await lessonsQuery.insert([lessonPayload]);
-        if (error) throw error;
+        await apiClient.admin.createLesson(lessonPayload);
       }
 
       navigate('/admin/lessons');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error guardando la lección';
+      setError(message);
       setSaving(false);
     }
   };
